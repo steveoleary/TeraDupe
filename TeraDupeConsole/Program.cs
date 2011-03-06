@@ -27,17 +27,20 @@ namespace TeraDupeConsole
                 where groupedFiles.Count() > 1 && CheckHash(groupedFiles)
                 select groupedFiles;
 
-            foreach (var fileGroup in fileGroups)
-            {
-                foreach (var file in fileGroup)
-                {
-                    Console.WriteLine(file.FileName + " : " + file.Size);
-                }
-            }
+            //foreach (var fileGroup in fileGroups)
+            //{
+            //    foreach (var file in fileGroup)
+            //    {
+            //        Console.WriteLine(file.FileName + " : " + file.Size);
+            //    }
+            //}
         }
 
         private static bool CheckHash(IGrouping<long, IEntry> groupedFiles)
         {
+            List<ulong> hashes = new List<ulong>();
+            bool sameHashes = false;
+
             foreach (var file in groupedFiles)
             {
                 //if (!new FileInfo(file.Path).Exists) return 0;
@@ -45,8 +48,12 @@ namespace TeraDupeConsole
                 using (var br = new BinaryReader(File.OpenRead(file.Path)))
                 {
                     b = br.ReadBytes(1000);
-                    ulong hashFromBytes = GetHashFromBytes(b);
+                    hashes.Add(GetHashFromBytes(b));
+                    //ulong hashFromBytes = GetHashFromBytes(b);
+                    
                 }
+
+                
             }
 
             return true;
