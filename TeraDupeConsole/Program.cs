@@ -40,9 +40,14 @@ namespace TeraDupeConsole
         private static ulong GetHash(IEntry file)
         {
             ulong hashFromBytes;
-            using (var br = new BinaryReader(File.OpenRead(file.Path)))
+
+            using (BinaryReader b = new BinaryReader(File.Open(file.Path, FileMode.Open)))
             {
-                hashFromBytes = GetHashFromBytes(br.ReadBytes(1000));
+                int length = (int)b.BaseStream.Length;
+                int pos = length / 2;
+                //TODO: If length is less than 2000 bytes read in entire file
+                b.BaseStream.Seek(pos, SeekOrigin.Begin);
+                hashFromBytes = GetHashFromBytes(b.ReadBytes(2000));
             }
 
             return hashFromBytes;
