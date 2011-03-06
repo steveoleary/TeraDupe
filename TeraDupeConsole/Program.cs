@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -22,41 +21,31 @@ namespace TeraDupeConsole
 
             var fileGroups =
                 from file in concat
-                group file by file.Size
+                group file by new { file.Size, hash = GetHash(file) }
                 into groupedFiles
-                where groupedFiles.Count() > 1 && CheckHash(groupedFiles)
+                where groupedFiles.Count() > 1
                 select groupedFiles;
 
-            //foreach (var fileGroup in fileGroups)
-            //{
-            //    foreach (var file in fileGroup)
-            //    {
-            //        Console.WriteLine(file.FileName + " : " + file.Size);
-            //    }
-            //}
-        }
-
-        private static bool CheckHash(IGrouping<long, IEntry> groupedFiles)
-        {
-            List<ulong> hashes = new List<ulong>();
-            bool sameHashes = false;
-
-            foreach (var file in groupedFiles)
+            foreach (var fileGroup in fileGroups)
             {
-                //if (!new FileInfo(file.Path).Exists) return 0;
-                byte[] b;
-                using (var br = new BinaryReader(File.OpenRead(file.Path)))
+                foreach (var file in fileGroup)
                 {
-                    b = br.ReadBytes(1000);
-                    hashes.Add(GetHashFromBytes(b));
-                    //ulong hashFromBytes = GetHashFromBytes(b);
-                    
+                    Console.WriteLine(file.FileName + " : " + file.Size);
                 }
-
-                
             }
 
-            return true;
+            Console.ReadLine();
+        }
+
+        private static ulong GetHash(IEntry file)
+        {
+            ulong hashFromBytes;
+            using (var br = new BinaryReader(File.OpenRead(file.Path)))
+            {
+                hashFromBytes = GetHashFromBytes(br.ReadBytes(1000));
+            }
+
+            return hashFromBytes;
         }
 
         private static ulong GetHashFromBytes(byte[] b)
@@ -75,17 +64,5 @@ namespace TeraDupeConsole
             }
             return result;
         }
-
-        //public static Int64 GetFileHash(string filename)
-        //{
-        //    if (!new FileInfo(filename).Exists) return 0;
-        //    byte[] b;
-        //    using (var br = new BinaryReader(File.OpenRead(filename)))
-        //    {
-        //        b = br.ReadBytes((int)br.BaseStream.Length);
-        //    }
-        //    return GetHashFromBytes(b);
-        //}
-
     }
 }
