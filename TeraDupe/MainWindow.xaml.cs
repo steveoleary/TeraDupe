@@ -42,6 +42,8 @@ namespace TeraDupe
             dlg1.RootFolder = System.Environment.SpecialFolder.MyComputer;
 
             var result = dlg1.ShowDialog();
+            listView1.Items.Add(dlg1.SelectedPath);
+
 
             //if (result == DialogResult.)
             //{

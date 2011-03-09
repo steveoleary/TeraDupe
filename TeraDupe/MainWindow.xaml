@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <Button Content="Button" Height="23" HorizontalAlignment="Left" Margin="192,145,0,0" Name="button1" VerticalAlignment="Top" Width="75" Click="button1_Click" />
+        <Button Content="Button" Height="23" HorizontalAlignment="Left" Margin="216,214,0,0" Name="button1" VerticalAlignment="Top" Width="75" Click="button1_Click" />
+        <ListView Height="170" HorizontalAlignment="Left" Margin="38,16,0,0" Name="listView1" VerticalAlignment="Top" Width="422" />
     </Grid>
 </Window>
