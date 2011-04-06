@@ -68,20 +68,26 @@ namespace TeraDupe
 
             var fileGroups =
                 from file in concat
-                group file by new { file.Size, hash = GetHash(file) }
-                    into groupedFiles
-                    where groupedFiles.Count() > 1
-                    select groupedFiles;
+                group file by new { file.Size, hash = GetHash(file) } into groupedFiles
+                where groupedFiles.Count() > 1
+                select new { ID = groupedFiles.Key, Values = groupedFiles };
+
+            var duplicateFiles = fileGroups.SelectMany(x => x.Values).Select(x => new { x.Path, x.Size }).ToList();
 
 
+            //foreach (var fileGroup in fileGroups)
+            //{
+            //    foreach (var file in fileGroup)
+            //    {
+            //        Console.WriteLine(file.FileName + " : " + file.Size);
+            //    }
+            //}
 
-            foreach (var fileGroup in fileGroups)
-            {
-                foreach (var file in fileGroup)
-                {
-                    Console.WriteLine(file.FileName + " : " + file.Size);
-                }
-            }
+            //var dataContext = fileGroups;
+           dataGrid1.DataContext = duplicateFiles;
+
+            //fileGroups.ToList();
+
         }
 
         private static ulong GetHash(IEntry file)
