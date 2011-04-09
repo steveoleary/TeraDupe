@@ -72,22 +72,11 @@ namespace TeraDupe
                 where groupedFiles.Count() > 1
                 select new { ID = groupedFiles.Key, Values = groupedFiles };
 
-            var duplicateFiles = fileGroups.SelectMany(x => x.Values).Select(x => new { x.Path, x.Size }).ToList();
+            var duplicateFiles = (from g in fileGroups
+                                 from i in g.Values
+                                 select new {g.ID.hash, i.Size, i.Path}).ToList();
 
-
-            //foreach (var fileGroup in fileGroups)
-            //{
-            //    foreach (var file in fileGroup)
-            //    {
-            //        Console.WriteLine(file.FileName + " : " + file.Size);
-            //    }
-            //}
-
-            //var dataContext = fileGroups;
            dataGrid1.DataContext = duplicateFiles;
-
-            //fileGroups.ToList();
-
         }
 
         private static ulong GetHash(IEntry file)
