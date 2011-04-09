@@ -72,11 +72,14 @@ namespace TeraDupe
                 where groupedFiles.Count() > 1
                 select new { ID = groupedFiles.Key, Values = groupedFiles };
 
-            var duplicateFiles = (from g in fileGroups
-                                 from i in g.Values
-                                 select new {g.ID.hash, i.Size, i.Path}).ToList();
+            var duplicateFiles = (from fileGroup in fileGroups
+                                  from file in fileGroup.Values
+                                  select new { fileGroup.ID.hash, file.Size, file.Path }).ToList();
 
-           dataGrid1.DataContext = duplicateFiles;
+            ListCollectionView collection = new ListCollectionView(duplicateFiles);
+            collection.GroupDescriptions.Add(new PropertyGroupDescription("hash"));
+
+            dataGrid1.DataContext = collection;
         }
 
         private static ulong GetHash(IEntry file)
@@ -116,7 +119,7 @@ namespace TeraDupe
     public class PathToSearch
     {
         public string SelectedPath { get; set; }
-        public bool SearchRecursively { get; set; }       
+        public bool SearchRecursively { get; set; }
 
         public PathToSearch(string selectedPath, bool searchRecursively)
         {
