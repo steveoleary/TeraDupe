@@ -34,8 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Recls.100.Net">
-      <HintPath>..\..\..\..\..\Desktop\recls.100.net-1.100.1000.0\Recls.100.Net.dll</HintPath>
+    <Reference Include="Recls.100.Net, Version=1.100.1000.0, Culture=neutral, PublicKeyToken=10fae791631c5716, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Libraries\recls.100.net-1.100.1000.0\Recls.100.Net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

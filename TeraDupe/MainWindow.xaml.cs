@@ -58,16 +58,23 @@ namespace TeraDupe
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
-            var query1 = from file in FileSearcher.Search(@"I:\", "*.avi")
-                         select file;
+            List<IEntry> entries = new List<IEntry>();
 
-            var query2 = from file in FileSearcher.Search(@"K:\", "*.avi")
-                         select file;
+            foreach (PathToSearch item in lbPathsToSearch.Items)
+            {
+                entries.AddRange(FileSearcher.Search(item.SelectedPath, "*.avi").Select(file => file));
+            }
 
-            var concat = query1.Concat(query2);
+            //var query1 = from file in FileSearcher.Search(@"Z:\", "*.avi")
+            //             select file;
+
+            //var query2 = from file in FileSearcher.Search(@"Y:\", "*.avi")
+            //             select file;
+
+            //var concat = query1.Concat(query2);
 
             var fileGroups =
-                from file in concat
+                from file in entries
                 group file by new { file.Size, hash = GetHash(file) } into groupedFiles
                 where groupedFiles.Count() > 1
                 select new { ID = groupedFiles.Key, Values = groupedFiles };
@@ -88,8 +95,8 @@ namespace TeraDupe
 
             using (BinaryReader b = new BinaryReader(File.Open(file.Path, FileMode.Open)))
             {
-                int length = (int)b.BaseStream.Length;
-                int pos = length / 2;
+                long length = b.BaseStream.Length;
+                long pos = length / 2;
                 //TODO: If length is less than 2000 bytes read in entire file
                 b.BaseStream.Seek(pos, SeekOrigin.Begin);
                 hashFromBytes = GetHashFromBytes(b.ReadBytes(2000));
