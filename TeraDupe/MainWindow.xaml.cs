@@ -65,14 +65,6 @@ namespace TeraDupe
                 entries.AddRange(FileSearcher.Search(item.SelectedPath, "*.avi").Select(file => file));
             }
 
-            //var query1 = from file in FileSearcher.Search(@"Z:\", "*.avi")
-            //             select file;
-
-            //var query2 = from file in FileSearcher.Search(@"Y:\", "*.avi")
-            //             select file;
-
-            //var concat = query1.Concat(query2);
-
             var fileGroups =
                 from file in entries
                 group file by new { file.Size, hash = GetHash(file) } into groupedFiles
