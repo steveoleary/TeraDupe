@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -58,7 +60,7 @@ namespace TeraDupe
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
-            List<IEntry> entries = new List<IEntry>();
+            var entries = new List<IEntry>();
 
             foreach (PathToSearch item in lbPathsToSearch.Items)
             {
@@ -73,9 +75,9 @@ namespace TeraDupe
 
             var duplicateFiles = (from fileGroup in fileGroups
                                   from file in fileGroup.Values
-                                  select new { fileGroup.ID.hash, file.Size, file.Path }).ToList();
+                                  select new DuplicateFile {hash = fileGroup.ID.hash, Size = file.Size, Path = file.Path}).ToList();
 
-            ListCollectionView collection = new ListCollectionView(duplicateFiles);
+            var collection = new ListCollectionView(duplicateFiles);
             collection.GroupDescriptions.Add(new PropertyGroupDescription("hash"));
 
             dataGrid1.DataContext = collection;
@@ -83,15 +85,22 @@ namespace TeraDupe
 
         private static ulong GetHash(IEntry file)
         {
-            ulong hashFromBytes;
+            ulong hashFromBytes = 0ul;
 
-            using (BinaryReader b = new BinaryReader(File.Open(file.Path, FileMode.Open)))
+            try
             {
-                long length = b.BaseStream.Length;
-                long pos = length / 2;
-                //TODO: If length is less than 2000 bytes read in entire file
-                b.BaseStream.Seek(pos, SeekOrigin.Begin);
-                hashFromBytes = GetHashFromBytes(b.ReadBytes(2000));
+                using (BinaryReader b = new BinaryReader(File.Open(file.Path, FileMode.Open)))
+                {
+                    long length = b.BaseStream.Length;
+                    long pos = length / 2;
+                    //TODO: If length is less than 2000 bytes read in entire file
+                    b.BaseStream.Seek(pos, SeekOrigin.Begin);
+                    hashFromBytes = GetHashFromBytes(b.ReadBytes(2000));
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
 
             return hashFromBytes;
@@ -113,6 +122,30 @@ namespace TeraDupe
             }
             return result;
         }
+
+        private void button3_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var dataGridRow in GetDataGridRows(dataGrid1))
+            {
+                
+            }
+        }
+
+        public IEnumerable<DataGridRow> GetDataGridRows(DataGrid grid)
+        {
+            var itemsSource = grid.ItemsSource;
+            if (null == itemsSource) yield return null;
+            foreach (var item in itemsSource)
+            {
+                var row = grid.ItemContainerGenerator.ContainerFromItem(item) as DataGridRow;
+                if (null != row) yield return row;
+            }
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
     }
 
     public class PathToSearch
@@ -124,6 +157,28 @@ namespace TeraDupe
         {
             SelectedPath = selectedPath;
             SearchRecursively = searchRecursively;
+        }
+    }
+
+    public class DuplicateFile : DependencyObject
+    {
+        public ulong hash { get; set; }
+        public long Size { get; set; }
+        public string Path { get; set; }
+
+        public bool HasBeenMarkedForDeletion
+        {
+            get { return (bool)GetValue(HasBeenMarkedForDeletionProperty); }
+            set { SetValue(HasBeenMarkedForDeletionProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for HasBeenMarkedForDeletion.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HasBeenMarkedForDeletionProperty =
+            DependencyProperty.Register("HasBeenMarkedForDeletion", typeof(bool), typeof(DuplicateFile));
+
+        private static void OnFilePathChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            
         }
     }
 }

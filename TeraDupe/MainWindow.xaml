@@ -40,7 +40,7 @@
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox IsChecked="False"></CheckBox>
+                            <CheckBox Name="isForDeletion" IsChecked="{Binding Path=HasBeenMarkedForDeletion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Checked="CheckBox_Checked"></CheckBox>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -57,6 +57,7 @@
                 </GroupStyle>
             </DataGrid.GroupStyle>
         </DataGrid>
+        <Button Content="Delete" Height="23" HorizontalAlignment="Left" Margin="108,297,0,0" Name="button3" VerticalAlignment="Top" Width="75" Click="button3_Click" />
     </Grid>
 </Window>
 
